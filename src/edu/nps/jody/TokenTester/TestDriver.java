@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -86,17 +87,23 @@ public class TestDriver
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) 
+	public static void main(String[] args) throws IOException
 	{
-		try 
-		{
+
+			//Load the file with all the DFA/Turing state information in it to be used by DFA engine.
 			int array[][] = convertStringVectorToIntArray(loadStateVector("tmstates.txt"));
 			//printVector(loadStateVector("tmstates.txt"));
 			
+			//Create the WordTokenizer engine to break incoming strings into tokens
 			WordTokenizer wt = new WordTokenizer(array);
 			
-			Vector<String> tokenList = wt.wordTokenizeText("you'r I't can't do<S> <S </S '' </S> <a> </a>bcde");
+			//String[] featureArray = wt.tokenize("The quick brown fox jumped over the lazy dog.");
 			
+			//tokenList is a simple list of tokens, no bigram, OSB, or Gappy Bigram work is being done here
+/*			Vector<String> tokenList = wt.wordTokenizeText("The quick brown fox jumped over the lazy dog.");
+			
+			//Just checking here to ensure the list isn't empty (which would throw a null pointer exception)
+			//Should probably do some exception handling here instead of a if-then-else
 			if (tokenList.size() > 0)
 			{
 				Iterator<String> tokenIterator = tokenList.iterator();
@@ -109,13 +116,30 @@ public class TestDriver
 			else
 			{
 				System.out.println("The list is empty!!");
+			}*/
+			
+/*			Vector<String> stringVector = FeatureMaker.parse("the quick brown fox jumped over the lazy dog", 4, FeatureMaker.FEATURE_OSB, wt);
+			
+			for (int i = 0; i < stringVector.size();i++)
+			{
+				System.out.println(stringVector.get(i));
+			}*/
+			
+			HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+			
+			FeatureMaker.textToFeatureMap("The quick brown fox jumped over the lazy dog.", 4, hashMap, FeatureMaker.FEATURE_OSB, wt);
+			
+			Iterator<String> hashMapIterator = hashMap.keySet().iterator();
+			
+			String key;
+			
+			while (hashMapIterator.hasNext())
+			{
+				key = hashMapIterator.next();
+				System.out.println(key + ", " + hashMap.get(key).toString() );
 			}
-		}
-		catch (IOException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+
 		
 		
 

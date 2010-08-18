@@ -10,7 +10,6 @@ package edu.nps.jody.TokenTester;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 import java.util.Vector;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 
@@ -32,12 +31,6 @@ public class FeatureMaker
 	public static final int			PORTER_STEMMING				=1;
 	public static final int			YASS_STEMMING					=2;
 	public static final int			LEMMATIZE							=3;
-	public static final char		QUESTION								= '?';
-	public static final char		EXCLAMATION						= '!';
-	public static final char		SINGLE_QUOTE						= '\'';
-	public static final char		LEFT_ANGLE_BRACKET		= '<';
-	public static enum				QUESTION_EXCLAMATION	{QUESTION, EXCLAMATION};			
-	
 	
 	//Accessors
 		//Static class. No Accessors.
@@ -65,44 +58,18 @@ public class FeatureMaker
 		return typeToLabel.get(featureType);
 	}
 	
-	/**
-     * Remove punctuation marks and replace capitalized letters with lowercase letters.
-     *
-     * Remove punctuation marks and change uppercase letters to make focus on words themselves in 
-     * natural language processing vice capitalization and proximity to punctuation.  Also eliminates
-     * non-words such as emoticons and sentence emphasis (ie !!!!!).
-     *
-     * @param text		  	String of text to be cleaned up.
-     * @return 							String of cleaned up text.
-     */
-	/*public static String cleanUp(String text)
-	{
-		//TODO Need to generalize this for caps on/off, punctuation on/off, <s>/</s> on/off
-		//String cleanedString="";
-		char	cleanedArray[];
-		
-		cleanedArray = text.toLowerCase().toCharArray();
-		
-		for (int i=0;i < cleanedArray.length;i++)
-			if (cleanedArray[i] > 'z' || cleanedArray[i] < 'a')
-			{
-				cleanedArray[i] = ' ';
-			}
-		
-		return new String(cleanedArray);
-	}*/
+
 	
 	public static String allLowerCase(String text)
 	{
 		return text.toLowerCase();
 	}
 	
-	public static String[] parseOSB(String[] tokenizedText, int maxGap)
+	
+	public static Vector<String> parseOSB(Vector<String> tokenizedText, int maxGap)
 	{
 		Vector<String> OSBVector = new Vector<String>();
-		int totalTokens = tokenizedText.length;
-		
-		//int n = 0;
+		int totalTokens = tokenizedText.size();
 		
 		//Create loop for word1. Use totalTokens vice words.length to save cycles.
 		for (int i=0; i < totalTokens; i++)
@@ -118,22 +85,19 @@ public class FeatureMaker
 				//k goes from the current gap out to the maxGap
 				for (int k=(j - 1); k < maxGap; k++)
 				{
-					OSBVector.add(tokenizedText[i] + " " + tokenizedText[i + j] + " " + k);
-					//resultArray[n] = words[i] + " " + words[i + j] + " " + k;
-					//n++;
+					OSBVector.add(tokenizedText.get(i) + " " + tokenizedText.get(i + j)+ " " + k);
 				}
 			}
 		}
 		
-		return (String[])OSBVector.toArray();
+		return OSBVector;
 	}
 	
-	public static String[] parseGB(String[] tokenizedText, int maxGap)
+	
+	public static Vector<String> parseGB(Vector<String> tokenizedText, int maxGap)
 	{
 		Vector<String> OSBVector = new Vector<String>();
-		int totalTokens = tokenizedText.length;
-		
-		//int n = 0;
+		int totalTokens = tokenizedText.size();
 		
 		//Create loop for word1. Use totalTokens vice words.length to save cycles.
 		for (int i=0; i < totalTokens; i++)
@@ -145,15 +109,12 @@ public class FeatureMaker
 				if ((i + j) > totalTokens - 1) 
 				{
 					break; //Get out of current word2 loop, but continue word1 loop.
-				}
-				
-					OSBVector.add(tokenizedText[i] + " " + tokenizedText[i + j]);
-					//resultArray[n] = words[i] + " " + words[i + j] + " " + k;
-					//n++;
+				}			
+					OSBVector.add(tokenizedText.get(i) + " " + tokenizedText.get(i + j));
 			}
 		}
 		
-		return (String[])OSBVector.toArray();
+		return OSBVector;
 	}
 	
 	/**
@@ -169,7 +130,7 @@ public class FeatureMaker
      * @param maxGap			Integer that specifies the maximum distance between words to use for creating features.
      * @return 							String array of word pairs with distance created from the text message parameter.
      */
-	public static String[] parseOSB(String text, int maxGap)
+	/*public static Vector<String> parseOSB(String text, int maxGap)
 	{
 		//Tokenizer to parse out words (defined as characters surrounded by whitespace)
 		StringTokenizer tokenizer = new StringTokenizer(text);
@@ -193,12 +154,12 @@ public class FeatureMaker
 			words[h] = tokenizer.nextToken();
 		}
 		
-		/*
+		
 		 * "n" will be used to advance through result array
 		 * There is no check to ensure I don't run off the
 		 * end of the array.  Depending on Wolfram-Alfa
 		 * formula for that.
-		*/
+		
 		int n = 0;
 		
 		//Create loop for word1. Use totalTokens vice words.length to save cycles.
@@ -222,7 +183,7 @@ public class FeatureMaker
 		}
 		
 		return resultArray;
-	}
+	}*/
 	
 	/**
      * Convert a String text message into a set of Gappy Bigrams.
@@ -237,62 +198,6 @@ public class FeatureMaker
      * @param maxGap			Integer that specifies the maximum distance between words to use for creating features.
      * @return 							String array of word pairs with distance created from the text message parameter.
      */
-	public static String[] parseGB(String text, int maxGap)
-	{
-		//Tokenizer to parse out words (defined as characters surrounded by whitespace)
-		//TODO Implement WordTokenizer here
-		StringTokenizer tokenizer = new StringTokenizer(text);
-		
-		//Determine total number of words in message to size words array
-		int totalTokens = tokenizer.countTokens();
-		
-		//Determine total size of resultArray. 
-		//FIXME  Getting null in resulting file for Gappy Bigram.  Root it out and kill it
-		int totalGB = (maxGap*(maxGap+1)/2)*totalTokens
-			- (maxGap)*(maxGap+1)*(maxGap+2)/6;
-	
-		//Create resultArray to return for addition to hashMap
-		String[] resultArray = new String[totalGB];
-	
-		//Create words array for looping through to get gappy bigrams
-		String words[] = new String[totalTokens];
-		
-		//Load the words array with words from text
-		for (int h=0; h < totalTokens; h++)
-		{
-			words[h] = tokenizer.nextToken();
-		}
-		
-		/*
-		 * "n" will be used to advance through result array
-		 * There is no check to ensure I don't run off the
-		 * end of the array.  Depending on Wolfram-Alfa
-		 * formula for that.
-		*/
-		int n = 0;
-		
-		//Create loop for word1. Use totalTokens vice words.length to save cycles.
-		for (int i=0; i < totalTokens; i++)
-		{
-			//Create loop for word2.  Going from 1 to (< maxGap + 1) vice traditional 0 to (< maxGap).
-			for (int j=1; j < maxGap + 1; j++)
-			{
-				//Don't run off the end of the words array
-				if ((i + j) > totalTokens - 1) 
-				{
-					break; //Get out of current word2 loop, but continue word1 loop.
-				}
-				//k goes from the current gap out to the maxGap
-//				for (int k=(j - 1); k < maxGap; k++)
-//				{
-					resultArray[n] = words[i] + " " + words[i + j];// + " " + k;
-					n++;
-//				}
-			}
-		}
-		
-		return resultArray;
-	}
 	
 	/**
      * Convert a String text message into a feature set.
@@ -304,31 +209,10 @@ public class FeatureMaker
      * @param featureType		integer value representing type of feature to extract from text message (ie OSB or GB).
      * @return 							String array of word pairs with distance created from the text message and feature type parameters.
      */
-	public static String[] parse(String text, int maxGap, int  featureType)
-	{	
-		//FIXME text should be tokenized HERE, not in parseOSB and parseGB
-		switch (featureType)
-		{
-			case FEATURE_OSB: //=0
-			
-				return parseOSB(text, maxGap);
-			
-			
-			case FEATURE_GB: //=1
 	
-				return parseGB(text, maxGap);
-			
-			
-			default:
-
-				return null;
-			
-		}
-	}		
-	
-	public static String[] parse(String text, int maxGap, int featureType, WordTokenizer tokenizer)
+	public static Vector<String> parse(String text, int maxGap, int featureType, WordTokenizer tokenizer)
 	{
-		String[] tokenizedText = tokenizer.tokenize(text);
+		Vector<String> tokenizedText = tokenizer.tokenize(text);
 		
 		switch (featureType)
 		{
@@ -345,7 +229,6 @@ public class FeatureMaker
 			default:
 
 				return null;
-			
 		}
 	}
 	
@@ -370,25 +253,35 @@ public class FeatureMaker
      * @param featureType		integer value representing type of feature to extract from text message (ie OSB or GB).
      * @return 							HashMap of features to the integer count of the number of occurrences of that feature in the text message. 
      */
-	public static HashMap<String, Integer> textToFeatureMap(String text, int maxGap, HashMap<String, Integer> hashMap,int featureType)
+	
+
+	/**
+	 * @param text
+	 * @param maxGap
+	 * @param hashMap
+	 * @param featureType
+	 * @param wt
+	 * @return
+	 */
+	public static HashMap<String, Integer> textToFeatureMap(String text, int maxGap, HashMap<String, Integer> hashMap, int featureType, WordTokenizer wt)
 	{
 		//FIXME This breaks the processing path in this program.  Now need to determine how to implement SBD, lemmatize, lowercase, punctuation, etc inline (pre-process is the method built to handle this, but how do I get that accomplished?)
-		String featureArray[] = parse(text, maxGap, featureType);
+		Vector<String> stringVector = parse(text, maxGap, featureType, wt);
 		
-		for (int i = 0; i < featureArray.length; i++)
+		for (int i = 0; i < stringVector.size(); i++)
 		{
 			//If the key is already there, add 1 to the value
 			//This looks WAY convoluted and uses TOO MANY lookups
 			//in the hashmap.  There has to be an iterator way
 			//to do this smartly
-			if (hashMap.containsKey(featureArray[i]))
+			if (hashMap.containsKey(stringVector.get(i)))
 			{
-				hashMap.put(featureArray[i], hashMap.get(featureArray[i]) + 1);
+				hashMap.put(stringVector.get(i), hashMap.get(stringVector.get(i)) + 1);
 			}
 			else
 			{
 				//Prime the entry in the hashmap with count =1
-				hashMap.put(featureArray[i], Integer.valueOf(1));
+				hashMap.put(stringVector.get(i), Integer.valueOf(1));
 			}
 		}
 		
@@ -543,5 +436,3 @@ public class FeatureMaker
 		return Arrays.asList(charArray).contains(currentChar);
 	}
 }
-
-

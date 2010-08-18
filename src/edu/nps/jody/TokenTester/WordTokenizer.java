@@ -35,9 +35,21 @@ public class WordTokenizer
 	}
 	
 	//Methods
-	public String[] tokenize(String text)
+	//FIXME This is a really DUMB way to handle Vector to array.  Maybe all of parse should be converted to a Vector to avoid this.
+/*	public String[] tokenize(String text)
 	{
-		return (String[])wordTokenizeText(text).toArray();
+		Vector<String> stringVector = wordTokenizeText(text);
+		
+		String[] stringArray = new String[stringVector.size()];
+		
+		stringVector.toArray(stringArray);
+		
+		return stringArray;
+	}*/
+	
+	public Vector<String> tokenize(String text)
+	{
+		return wordTokenizeText(text);
 	}
 	
 	public Vector<String> wordTokenizeText(String text)
