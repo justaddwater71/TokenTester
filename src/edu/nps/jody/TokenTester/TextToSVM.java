@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class TextToSVM 
 {
@@ -35,7 +37,6 @@ public class TextToSVM
 	
 	TextToSVM(File svmDataFile, HashMap<String, Integer> classToIntegerMap)
 	{
-		//this.svmDataFile 				= svmDataFile;
 		this.classToIntegerMap 	= classToIntegerMap;
 		
 		readyLibSVMFileWriter(svmDataFile);
@@ -62,7 +63,14 @@ public class TextToSVM
 		
 		readyLibSVMFileWriter(svmDataFile);
 		
+		if (classToIntegerMap == null || classToIntegerMap.isEmpty())
+		{
+			maxMapValue = 0;
+		}
+		else
+		{
 		maxMapValue			= Collections.max(classToIntegerMap.values());
+		}
 	}
 	
 	//Methods
@@ -70,8 +78,15 @@ public class TextToSVM
 	public HashMap<String, Integer> loadClassToIntegerMapFile(File classToIntegerMapFile)
 	{
 		//Read classification to integer map file into HashMap
+		
 		try 
 		{
+			if (!classToIntegerMapFile.exists())
+			{
+				classToIntegerMapFile.createNewFile();
+				return new HashMap<String, Integer>();
+			}
+			
 			FileInputStream mapFileInputStream 				= new FileInputStream(classToIntegerMapFile);
 			ObjectInputStream mapObjectInputStream 	= new ObjectInputStream(mapFileInputStream);
 			
@@ -99,6 +114,12 @@ public class TextToSVM
 		try 
 		{
 			//Using FileWriter vice just FIle so I can invoke APPEND
+			if (!svmDataFile.exists())
+			{
+				svmDataFile.createNewFile();
+			}
+			
+			
 			svmFileWriter = new PrintWriter( new FileWriter(svmDataFile, APPEND));
 		} 
 		catch (FileNotFoundException e) 
@@ -111,13 +132,19 @@ public class TextToSVM
 			//TODO put something clever here
 		}
 	}
-	public String addInstance(String classification, HashMap<String, Integer> classMap, HashMap<Integer, Integer> features)
+	public String addInstance(String classification, HashMap<Integer, Integer> features)
 	{
 		Integer classInteger;
 		
-		if (classMap.containsKey(classification))
+		if(classToIntegerMap == null)
 		{
-			 classInteger = classMap.get(classification);
+			classToIntegerMap = new HashMap<String, Integer>();
+		}
+		
+		
+		if (classToIntegerMap.containsKey(classification))
+		{
+			 classInteger = classToIntegerMap.get(classification);
 		}
 		else
 		{
@@ -128,17 +155,24 @@ public class TextToSVM
 		
 		String libSVMLine = classInteger.toString();
 		
-		Iterator<Integer> iterator = features.keySet().iterator();
+		SortedSet<Integer> sortedSet =new TreeSet<Integer>( features.keySet());
+		
+		Iterator<Integer> iterator =sortedSet.iterator(); 
 		
 		Integer featureTag;
 		
 		while (iterator.hasNext())
 		{
 			featureTag = iterator.next();
-			libSVMLine.concat(featureTag.toString() + ":" + features.get(featureTag).toString());
+			libSVMLine = libSVMLine + " " + featureTag.toString() + ":" + features.get(featureTag).toString();
 		}
 		
 		return libSVMLine;
+	}
+	
+	public void writeInstanceToFile(String libSVMLine)
+	{
+		svmFileWriter.println(libSVMLine);
 	}
 	
 }

@@ -7,8 +7,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.SortedSet;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.Vector;
+
+import edu.nps.jody.HashFinder.MembershipChecker;
 
 
 public class TestDriver 
@@ -125,19 +129,46 @@ public class TestDriver
 				System.out.println(stringVector.get(i));
 			}*/
 			
+			//Load the features and counts of features into a HashMap
 			HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
 			
 			FeatureMaker.textToFeatureMap("The quick brown fox jumped over the lazy dog.", 4, hashMap, FeatureMaker.FEATURE_OSB, wt);
 			
+			//Convert each String feature in above hashMap into an Integer MPHF representation of that String Feature 
 			Iterator<String> hashMapIterator = hashMap.keySet().iterator();
 			
 			String key;
 			
+			MembershipChecker osbMember = new MembershipChecker("keys.mph", "signature");
+
+			Integer	theValue;
+			Integer 	theIndex;
+			
+			HashMap<Integer, Integer> hashIntegers = new HashMap<Integer, Integer>();
+			
 			while (hashMapIterator.hasNext())
 			{
-				key = hashMapIterator.next();
-				System.out.println(key + ", " + hashMap.get(key).toString() );
+				key 				= hashMapIterator.next();
+				theValue	= hashMap.get(key);
+				theIndex = osbMember.getIndex(key);
+				System.out.println(key + ", " + theValue.toString());
+				System.out.println(theIndex.toString() + ", " + theValue.toString());
+				hashIntegers.put(theIndex, theValue);
 			}
+			
+			File svmDataFile = new File("svmDataFile");
+			
+			File classToIntegerFile = new File("classToIntegerFile");
+			
+			TextToSVM textToSVM = new TextToSVM(svmDataFile, classToIntegerFile);
+			
+			String libSVMLine = textToSVM.addInstance("test", hashIntegers);
+			
+			System.out.println(libSVMLine);
+			
+			textToSVM.writeInstanceToFile(libSVMLine);
+			
+			
 
 
 		

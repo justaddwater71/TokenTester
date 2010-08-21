@@ -5,6 +5,7 @@
      * @version     2010.0703
      * @since       1.6
      */
+
 package edu.nps.jody.TokenTester;
 
 import java.io.IOException;
@@ -336,11 +337,11 @@ public class FeatureMaker
 		
 		if (dropUnknownWord)
 		{
-			processedText = MembershipCheck.check(MembershipCheck.DROP_WORD, processedText);
+			//processedText = MembershipCheck.check(MembershipCheck.DROP_WORD, processedText);
 		}
 		else
 		{
-			processedText = MembershipCheck.check(MembershipCheck.TAG_UNK, processedText);
+			//processedText = MembershipCheck.check(MembershipCheck.TAG_UNK, processedText);
 		}
 		
 		if (removePunctuation)
