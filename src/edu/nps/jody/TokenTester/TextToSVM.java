@@ -3,65 +3,45 @@ package edu.nps.jody.TokenTester;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import edu.nps.jody.HashFinder.MembershipChecker;
+
 public class TextToSVM 
 {
 	//Data Members
-	//File												svmDataFile;
-	//File 												classificationToIntegerMapFile;
 	Integer 										maxMapValue;
 	HashMap<String, Integer>	classToIntegerMap;
 	HashMap<Integer, Integer>	featureCountMap;
-	PrintWriter 								svmFileWriter;
 	final boolean 							APPEND = true;
 	
 	//Constructors
-	TextToSVM(String svmDataFileName, HashMap<String, Integer> classToIntegerMap)
-	{
-		File svmDataFile 				= new File(svmDataFileName);
-		this.classToIntegerMap = classToIntegerMap;
-		
-		readyLibSVMFileWriter(svmDataFile);
-		
-		maxMapValue			= Collections.max(classToIntegerMap.values());
-	}
-	
-	TextToSVM(File svmDataFile, HashMap<String, Integer> classToIntegerMap)
+	TextToSVM(HashMap<String, Integer> classToIntegerMap)
 	{
 		this.classToIntegerMap 	= classToIntegerMap;
 		
-		readyLibSVMFileWriter(svmDataFile);
-		
 		maxMapValue			= Collections.max(classToIntegerMap.values());
 	}
 	
 	
-	TextToSVM(String svmDataFileName, String classificationToIntegerMapName)
+	TextToSVM(String classificationToIntegerMapName)
 	{
-		File svmDataFile									= new File(svmDataFileName);
 		File classificationToIntegerMapFile = new File(classificationToIntegerMapName);
 		
 		this.classToIntegerMap		= loadClassToIntegerMapFile(classificationToIntegerMapFile);
-		
-		readyLibSVMFileWriter(svmDataFile);
-		
+				
 		maxMapValue			= Collections.max(classToIntegerMap.values());
 	}
 	
-	TextToSVM(File svmDataFile, File classificationToIntegerMapFile)
+	TextToSVM(File classificationToIntegerMapFile)
 	{
 		this.classToIntegerMap = loadClassToIntegerMapFile(classificationToIntegerMapFile);
-		
-		readyLibSVMFileWriter(svmDataFile);
 		
 		if (classToIntegerMap == null || classToIntegerMap.isEmpty())
 		{
@@ -78,7 +58,6 @@ public class TextToSVM
 	public HashMap<String, Integer> loadClassToIntegerMapFile(File classToIntegerMapFile)
 	{
 		//Read classification to integer map file into HashMap
-		
 		try 
 		{
 			if (!classToIntegerMapFile.exists())
@@ -108,31 +87,28 @@ public class TextToSVM
 		
 		return null;	
 	}
-	
-	private void readyLibSVMFileWriter(File svmDataFile)
+	public HashMap<Integer, Integer> StringMapToIntegerMap(HashMap<String, Integer> stringMap, MembershipChecker membershipChecker)
 	{
-		try 
+		HashMap<Integer, Integer> integerMap = new HashMap<Integer, Integer>();
+		
+		String key;
+		
+		Integer keyHash;
+		
+		Iterator<String> iterator = stringMap.keySet().iterator();
+		
+		while (iterator.hasNext())
 		{
-			//Using FileWriter vice just FIle so I can invoke APPEND
-			if (!svmDataFile.exists())
-			{
-				svmDataFile.createNewFile();
-			}
+			key = iterator.next();
 			
+			keyHash = membershipChecker.getIndex(key);
 			
-			svmFileWriter = new PrintWriter( new FileWriter(svmDataFile, APPEND));
-		} 
-		catch (FileNotFoundException e) 
-		{
-			// TODO Put in a code block to create the file if it does not already exist.
-			e.printStackTrace();
+			integerMap.put(keyHash, stringMap.get(key));
 		}
-		catch (IOException e)
-		{
-			//TODO put something clever here
-		}
+		
+		return integerMap;
 	}
-	public String addInstance(String classification, HashMap<Integer, Integer> features)
+	public String mapToString(String classification, HashMap<Integer, Integer> features)
 	{
 		Integer classInteger;
 		
@@ -140,7 +116,6 @@ public class TextToSVM
 		{
 			classToIntegerMap = new HashMap<String, Integer>();
 		}
-		
 		
 		if (classToIntegerMap.containsKey(classification))
 		{
@@ -170,9 +145,9 @@ public class TextToSVM
 		return libSVMLine;
 	}
 	
-	public void writeInstanceToFile(String libSVMLine)
+/*	public void writeInstanceToFile(String libSVMLine)
 	{
 		svmFileWriter.println(libSVMLine);
-	}
+	}*/
 	
 }

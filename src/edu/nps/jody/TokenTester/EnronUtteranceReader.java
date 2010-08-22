@@ -64,11 +64,14 @@ public class EnronUtteranceReader
 		try {
 			while ((line = bufferedReader.readLine()) != null)
 			{
-				if (line.startsWith("newutterance"))
+				if (line.startsWith("newutterance") && !text.equalsIgnoreCase(""))
 				{
-					stringMap = FeatureMaker.textToFeatureMap(text, MAXGAP, null, FeatureMaker.FEATURE_OSB, wordTokenizer);
-					svmText = textToSVM.mapToString(userName, textToSVM.StringMapToIntegerMap(stringMap, membershipChecker));
-					libSVMTextWriter.println(svmText);
+						System.out.println(line);
+						userName = utteranceFile.getName();//FIXME This will not work anywhere but in ENRON corpus.  Generalize when porting code over for Android email and text.
+						stringMap = FeatureMaker.textToFeatureMap(text, MAXGAP, null, FeatureMaker.FEATURE_OSB, wordTokenizer);
+						svmText = textToSVM.mapToString(userName, textToSVM.StringMapToIntegerMap(stringMap, membershipChecker));
+						libSVMTextWriter.println(svmText);
+						text = "";
 				}
 				else
 				{
@@ -80,6 +83,12 @@ public class EnronUtteranceReader
 			e.printStackTrace();
 		}
 		
+		libSVMTextWriter.flush();
+		libSVMTextWriter.close();
+		
+		System.out.println("Process Complete -- enjoy your file!");
+		
+		return;
 	}
 
 }

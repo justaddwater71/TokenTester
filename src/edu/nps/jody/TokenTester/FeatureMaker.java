@@ -267,6 +267,16 @@ public class FeatureMaker
 	public static HashMap<String, Integer> textToFeatureMap(String text, int maxGap, HashMap<String, Integer> hashMap, int featureType, WordTokenizer wt)
 	{
 		//FIXME This breaks the processing path in this program.  Now need to determine how to implement SBD, lemmatize, lowercase, punctuation, etc inline (pre-process is the method built to handle this, but how do I get that accomplished?)
+		if (text == null)
+		{
+			return null;
+		}
+		
+		if (hashMap == null)
+		{
+			hashMap = new HashMap<String, Integer>();
+		}
+		
 		Vector<String> stringVector = parse(text, maxGap, featureType, wt);
 		
 		for (int i = 0; i < stringVector.size(); i++)
