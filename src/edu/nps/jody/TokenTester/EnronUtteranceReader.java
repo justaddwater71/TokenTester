@@ -42,12 +42,51 @@ public class EnronUtteranceReader
 	}
 	
 	//Methods
+	public void recurseUtteranceFIles(String fileName)
+	{
+		File file = new File(fileName);
+		String[] fileList;
+		//FIXME This is for initial monitoring only, remove once code is functioning
+		System.out.println("Evaluating " + fileName);
+		
+		if (file.isDirectory())
+		{
+			fileList = file.list();
+			
+			String absolutePath = file.getAbsolutePath();;
+			
+			for (int i = 0; i < fileList.length;i++)
+			{
+				fileList[i] = absolutePath +"/" +  fileList[i];
+			}
+			
+			for (int j = 0; j < fileList.length;j++)
+			{
+				processUtteranceFile(fileList[j]);
+			}
+		}
+		else if (file.isFile())
+		{
+			processUtteranceFile(file);
+		}
+	}
+	public void processUtteranceFile(String utteranceFileName)
+	{
+		File utteranceFile = new File(utteranceFileName);
+		
+		//FIXME This is for initial monitoring only, remove once code is functioning
+		System.out.println("Processing " + utteranceFile.getName());
+		processUtteranceFile(utteranceFile);
+	}
+	
+	
 	public void processUtteranceFile(File utteranceFile)
 	{
 		String text = "";
 		String line = "";		
 		String svmText;
 		HashMap<String, Integer> stringMap;
+		HashMap<Integer, Integer> integerMap;
 		
 		try 
 		{
@@ -64,19 +103,40 @@ public class EnronUtteranceReader
 		try {
 			while ((line = bufferedReader.readLine()) != null)
 			{
-				if (line.startsWith("newutterance") && !text.equalsIgnoreCase(""))
+				if (line.startsWith("newutterance"))
 				{
+					if (!text.equalsIgnoreCase(""))
+					{
 						System.out.println(line);
 						userName = utteranceFile.getName();//FIXME This will not work anywhere but in ENRON corpus.  Generalize when porting code over for Android email and text.
 						stringMap = FeatureMaker.textToFeatureMap(text, MAXGAP, null, FeatureMaker.FEATURE_OSB, wordTokenizer);
-						svmText = textToSVM.mapToString(userName, textToSVM.StringMapToIntegerMap(stringMap, membershipChecker));
+						integerMap = textToSVM.StringMapToIntegerMap(stringMap, membershipChecker);
+						svmText = textToSVM.mapToString(userName, integerMap);
 						libSVMTextWriter.println(svmText);
+						line = "";
 						text = "";
+					}
+					else
+					{
+						line = "";
+					}
 				}
 				else
 				{
 					text = text + line;
 				}
+			}
+			
+			if (!text.equalsIgnoreCase(""))
+			{
+				System.out.println(line);
+				userName = utteranceFile.getName();//FIXME This will not work anywhere but in ENRON corpus.  Generalize when porting code over for Android email and text.
+				stringMap = FeatureMaker.textToFeatureMap(text, MAXGAP, null, FeatureMaker.FEATURE_OSB, wordTokenizer);
+				integerMap = textToSVM.StringMapToIntegerMap(stringMap, membershipChecker);
+				svmText = textToSVM.mapToString(userName, integerMap);
+				libSVMTextWriter.println(svmText);
+				line = "";
+				text = "";
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

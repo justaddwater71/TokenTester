@@ -7,7 +7,7 @@ public class WordTokenizer
 	//Data Members
 	String token = "";
 	int i = 0; //This is a TERRIBLE way to handle the index, but necessary for now.
-	Vector<String> tokenList = new Vector<String>();
+	Vector<String> tokenList;
 	int stateTable[][];
 	
 	//Constants
@@ -54,6 +54,7 @@ public class WordTokenizer
 	
 	public Vector<String> wordTokenizeText(String text)
 	{
+		tokenList = new Vector<String>();
 		//Ensure a finishing character is present
 		text = text.concat("\n");
 		

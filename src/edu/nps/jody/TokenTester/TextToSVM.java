@@ -112,7 +112,7 @@ public class TextToSVM
 	{
 		Integer classInteger;
 		
-		if(classToIntegerMap == null)
+		if (classToIntegerMap == null)
 		{
 			classToIntegerMap = new HashMap<String, Integer>();
 		}
@@ -126,6 +126,8 @@ public class TextToSVM
 			maxMapValue++;
 			 
 			 classInteger = maxMapValue;
+			 
+			 classToIntegerMap.put(classification, classInteger);
 		}
 		
 		String libSVMLine = classInteger.toString();

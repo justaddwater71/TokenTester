@@ -15,7 +15,7 @@ import edu.nps.jody.HashFinder.MembershipChecker;
 public class TestDriver 
 {
 	//Data Members
-
+	final static String TESTFILE = "/home/jody/Thesis/enron/utterances/parsed";
 	
 	//Constructors
 	
@@ -104,11 +104,13 @@ public class TestDriver
 			
 			TextToSVM textToSVM = new TextToSVM(classToIntegerFile);
 			
-			File utteranceFile = new File("allen-p.txt");			
+			//File utteranceFile = new File(TESTFILE);			
 			
 			EnronUtteranceReader eur = new EnronUtteranceReader(svmDataFile, textToSVM, wordTokenizer, osbMember);
 			
-			eur.processUtteranceFile(utteranceFile);
+			//eur.processUtteranceFile(utteranceFile);
+			
+			eur.recurseUtteranceFIles(TESTFILE);
 	}
 
 }
