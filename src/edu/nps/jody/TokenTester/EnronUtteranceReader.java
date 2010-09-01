@@ -161,10 +161,10 @@ public class EnronUtteranceReader
 			if (!text.equalsIgnoreCase(""))
 			{
 				System.out.println(line);
-				userName = utteranceFile.getName();//FIXME This will not work anywhere but in ENRON corpus.  Generalize when porting code over for Android email and text.
-				stringMap = FeatureMaker.textToFeatureMap(text, MAXGAP, null, FeatureMaker.FEATURE_OSB, wordTokenizer);
-				integerMap = textToSVM.StringMapToIntegerMap(stringMap, membershipChecker);
-				svmText = textToSVM.mapToString(userName, integerMap);
+				userName 		= utteranceFile.getName();//FIXME This will not work anywhere but in ENRON corpus.  Generalize when porting code over for Android email and text.
+				stringMap 		= FeatureMaker.textToFeatureMap(text, MAXGAP, null, FeatureMaker.FEATURE_OSB, wordTokenizer);
+				integerMap 	= textToSVM.StringMapToIntegerMap(stringMap, membershipChecker);
+				svmText 			= textToSVM.mapToString(userName, integerMap);
 				localLibSVMTextWriter.println(svmText);
 				line = "";
 				text = "";

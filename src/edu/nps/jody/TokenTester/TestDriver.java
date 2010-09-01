@@ -91,7 +91,7 @@ public class TestDriver
 	public static void main(String[] args) throws IOException
 	{
 		Vector<Vector<String>> states = loadStateVector("tmstates.txt");
-		
+
 		int[][] stateArray = convertStringVectorToIntArray(states);
 		
 		WordTokenizer wordTokenizer = new WordTokenizer(stateArray);
@@ -110,7 +110,7 @@ public class TestDriver
 			
 			//eur.processUtteranceFile(utteranceFile);
 			
-			eur.recurseUtteranceFIles(TESTFILE);
+			eur.recurseUtteranceFiles(TESTFILE, true);
 	}
 
 }

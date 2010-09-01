@@ -26,7 +26,7 @@ public class TextToSVM
 	{
 		this.classToIntegerMap 	= classToIntegerMap;
 		
-		maxMapValue			= Collections.max(classToIntegerMap.values());
+		maxMapValue					= Collections.max(classToIntegerMap.values());
 	}
 	
 	
@@ -36,12 +36,12 @@ public class TextToSVM
 		
 		this.classToIntegerMap		= loadClassToIntegerMapFile(classificationToIntegerMapFile);
 				
-		maxMapValue			= Collections.max(classToIntegerMap.values());
+		maxMapValue						= Collections.max(classToIntegerMap.values());
 	}
 	
 	TextToSVM(File classificationToIntegerMapFile)
 	{
-		this.classToIntegerMap = loadClassToIntegerMapFile(classificationToIntegerMapFile);
+		this.classToIntegerMap 		= loadClassToIntegerMapFile(classificationToIntegerMapFile);
 		
 		if (classToIntegerMap == null || classToIntegerMap.isEmpty())
 		{
@@ -49,7 +49,7 @@ public class TextToSVM
 		}
 		else
 		{
-		maxMapValue			= Collections.max(classToIntegerMap.values());
+		maxMapValue					= Collections.max(classToIntegerMap.values());
 		}
 	}
 	
