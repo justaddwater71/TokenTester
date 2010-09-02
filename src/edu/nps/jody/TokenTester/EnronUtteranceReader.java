@@ -62,7 +62,7 @@ public class EnronUtteranceReader
 			
 			for (int j = 0; j < fileList.length;j++)
 			{
-				processUtteranceFile(fileList[j]);
+				processUtteranceFile(fileList[j], oneForOne);
 			}
 		}
 		else if (file.isFile())
@@ -108,6 +108,15 @@ public class EnronUtteranceReader
 		processUtteranceFile(utteranceFile);
 	}
 	
+	public void processUtteranceFile(String utteranceFileName, boolean oneForOne)
+	{
+		File utteranceFile = new File(utteranceFileName);
+		
+		//FIXME This is for initial monitoring only, remove once code is functioning
+		System.out.println("Processing " + utteranceFile.getName());
+		processUtteranceFile(utteranceFile, oneForOne);
+	}
+	
 	public void processUtteranceFile(File utteranceFile, boolean oneForOne)
 	{
 		String text = "";
@@ -120,8 +129,8 @@ public class EnronUtteranceReader
 		
 		try 
 		{
-			localLibSVMTextWriter = new PrintWriter(libSVMTextFile);
-			reader					= new FileReader(utteranceFile);
+			localLibSVMTextWriter 	= new PrintWriter(libSVMTextFile);
+			reader								= new FileReader(utteranceFile);
 		} 
 		catch (FileNotFoundException e) 
 		{

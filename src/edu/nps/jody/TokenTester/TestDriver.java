@@ -15,7 +15,7 @@ import edu.nps.jody.HashFinder.MembershipChecker;
 public class TestDriver 
 {
 	//Data Members
-	final static String TESTFILE = "/home/jody/Thesis/enron/utterances/parsed";
+	final static String TESTFILE = "/home/jody/Thesis/enron/utterances/againd";
 	
 	//Constructors
 	
